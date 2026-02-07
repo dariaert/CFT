@@ -15,10 +15,17 @@ public class StringStatistics implements Statistics {
     }
 
     @Override
-    public void print() {
-        System.out.println("Количество строк: " + count);
-        System.out.println("Минимальная длина: " + minLength);
-        System.out.println("Максимальная длина: " + maxLength);
+    public boolean hasData() {
+        return count > 0;
     }
 
+    @Override
+    public void print(StatisticsMode mode) {
+        System.out.println("Количество строк: " + count);
+
+        if (mode == StatisticsMode.FULL) {
+            System.out.println("Минимальная длина: " + minLength);
+            System.out.println("Максимальная длина: " + maxLength);
+        }
+    }
 }

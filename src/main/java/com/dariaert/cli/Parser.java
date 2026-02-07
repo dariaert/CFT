@@ -1,6 +1,7 @@
 package com.dariaert.cli;
 
 import com.dariaert.config.Config;
+import com.dariaert.stats.StatisticsMode;
 
 public class Parser {
 
@@ -9,14 +10,43 @@ public class Parser {
         for (int i = 0; i < args.length; i++){
             switch (args[i]){
                 case "-a" -> config.appendMode = true;
-                case "-s" -> config.shortStats = true;
-                case "-f" -> config.fullStats = true;
-                case "-o" -> config.outputPath = args[++i];
-                case "-p" -> config.prefix = args[++i];
-                default -> config.inputFiles.add(args[i]);
+                case "-s" -> {
+                    if (config.statisticsMode != null) {
+                        System.err.println("Нельзя использовать -s и -f одновременно");
+                        return null;
+                    }
+                    config.statisticsMode = StatisticsMode.SHORT;
+                }
+                case "-f" -> {
+                    if (config.statisticsMode != null) {
+                        System.err.println("Нельзя использовать -s и -f одновременно");
+                        return null;
+                    }
+                    config.statisticsMode = StatisticsMode.FULL;
+                }
+                case "-o" -> {
+                    if (i + 1 >= args.length) {
+                        System.err.println("Ошибка: опция -o требует аргумент (путь)");
+                        return null;
+                    }
+                    config.outputPath = args[++i];
+                }
+                case "-p" -> {
+                    if (i + 1 >= args.length) {
+                        System.err.println("Ошибка: опция -p требует аргумент (префикс)");
+                        return null;
+                    }
+                    config.prefix = args[++i];
+                }
+                default -> {
+                    if (args[i].startsWith("-")) {
+                        System.err.println("Неизвестная опция: " + args[i]);
+                        return null;
+                    }
+                    config.inputFiles.add(args[i]);
+                }
             }
         }
         return config;
     }
-
 }
